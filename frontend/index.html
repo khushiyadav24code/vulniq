@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VulniQ Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <header class="hero">
+        <div>
+            <h1>VulniQ</h1>
+            <p>Centralized Vulnerability Detection & Intelligent Query Interface</p>
+        </div>
+        <span class="status">Backend Connected</span>
+    </header>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h3>Total Vulnerabilities</h3>
+            <p id="total">0</p>
+        </div>
+        <div class="stat-card high">
+            <h3>High Risk</h3>
+            <p id="high">0</p>
+        </div>
+        <div class="stat-card medium">
+            <h3>Medium Risk</h3>
+            <p id="medium">0</p>
+        </div>
+        <div class="stat-card low">
+            <h3>Low Risk</h3>
+            <p id="low">0</p>
+        </div>
+    </div>
+<section class="panel chart-panel">
+    <h2>Risk Distribution</h2>
+    <canvas id="riskChart"></canvas>
+</section>
+    <div class="main-grid">
+        <section class="panel">
+            <h2>Add Vulnerability</h2>
+            <p class="hint">Manually add vulnerability details.</p>
+
+            <input type="text" id="vulnTitle" placeholder="Title e.g. SQL Injection">
+            <input type="text" id="vulnDescription" placeholder="Description e.g. Login form vulnerable">
+
+            <select id="vulnSeverity">
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+            </select>
+
+            <button onclick="addVulnerability()">Add Vulnerability</button>
+        </section>
+
+        <section class="panel">
+            <h2>Upload Report</h2>
+            <p class="hint">Upload a .txt vulnerability report for analysis.</p>
+            <input type="file" id="reportFile">
+            <button onclick="uploadReport()">Upload & Analyze</button>
+        </section>
+
+        <section class="panel">
+            <h2>Intelligent Search</h2>
+            <p class="hint">Search vulnerabilities using natural language.</p>
+            <input type="text" id="searchQuery" placeholder="Example: login sql vulnerability">
+            <button onclick="searchVuln()">Search</button>
+        </section>
+
+        <section class="panel">
+            <h2>Severity Filter</h2>
+            <p class="hint">Filter vulnerabilities by risk level.</p>
+            <select id="filterSeverity">
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+            </select>
+            <button onclick="filterSeverity()">Filter</button>
+        </section>
+    </div>
+
+    <section class="panel">
+        <h2>Analysis Output</h2>
+        <pre id="result">Your result will appear here...</pre>
+    </section>
+
+    <section class="panel">
+        <div class="section-head">
+            <h2>Stored Vulnerabilities</h2>
+            <button onclick="loadAll()">Refresh</button>
+        </div>
+        <div id="vulnList"></div>
+    </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
