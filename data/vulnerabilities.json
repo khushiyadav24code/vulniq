@@ -4,5 +4,29 @@
         "title": "sql injection",
         "description": "login form vulnerable",
         "severity": "HIGH"
+    },
+    {
+        "id": 2,
+        "title": "uploaded vulnerability",
+        "description": "sql injection found in login page.\r\ncritical vulnerability detected.\r\nuser input is not validated.",
+        "severity": "HIGH"
+    },
+    {
+        "id": 3,
+        "title": "uploaded vulnerability",
+        "description": "sql injection found in login page.\r\ncritical vulnerability detected.\r\nuser input is not validated.",
+        "severity": "HIGH"
+    },
+    {
+        "id": 4,
+        "title": "uploaded vulnerability",
+        "description": "sql injection found in login page.\r\ncritical vulnerability detected.",
+        "severity": "HIGH",
+        "attack_path": [
+            "Input validation failure",
+            "SQL Injection executed",
+            "Database access gained",
+            "Sensitive data exposure"
+        ]
     }
 ]

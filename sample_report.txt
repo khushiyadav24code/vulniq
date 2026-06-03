@@ -1,0 +1,2 @@
+SQL Injection found in login page.
+Critical vulnerability detected.
