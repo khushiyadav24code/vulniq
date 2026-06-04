@@ -198,3 +198,55 @@ async function deleteVulnerability(id) {
 function showResult(data) {
     document.getElementById("result").textContent = JSON.stringify(data, null, 2);
 }
+async function downloadReport() {
+    const response = await fetch(`${API_URL}/all`);
+    const data = await response.json();
+
+    const fileData = JSON.stringify(data, null, 2);
+
+    const blob = new Blob([fileData], {
+        type: "application/json"
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vulniq_report.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+const modeToggle = document.getElementById("modeToggle");
+
+if (modeToggle) {
+
+    modeToggle.addEventListener("click", function () {
+
+        document.body.classList.toggle("dark");
+
+        if (document.body.classList.contains("dark")) {
+
+            modeToggle.innerHTML = "☀️ Light";
+
+        } else {
+
+            modeToggle.innerHTML = "🌙 Dark";
+        }
+    });
+
+}
+function login() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if (email === "admin@vulniq.com" && password === "admin123") {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+
+        getStats();
+        loadAll();
+    } else {
+        alert("Invalid email or password");
+    }
+}

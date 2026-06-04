@@ -244,3 +244,124 @@ ol {
     max-width: 320px;
     margin: auto;
 }
+.hero-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.mode-btn {
+    background: white;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.mode-btn:hover {
+    background: #eff6ff;
+}
+
+/* DARK MODE */
+
+body.dark {
+    background: linear-gradient(135deg, #020617, #0f172a);
+    color: #e5e7eb;
+}
+
+body.dark .panel,
+body.dark .stat-card {
+    background: #111827;
+    color: #f1f5f9;
+    border: 1px solid #334155;
+}
+
+body.dark .hero {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+body.dark .hero p {
+    color: #cbd5e1;
+}
+
+body.dark .panel h2,
+body.dark .vuln-item h3,
+body.dark .attack-section h4 {
+    color: #93c5fd;
+}
+
+body.dark .vuln-item {
+    background: #1e293b;
+    border-left: 6px solid #3b82f6;
+}
+
+body.dark input,
+body.dark select {
+    background: #020617;
+    color: white;
+    border-color: #334155;
+}
+
+body.dark pre {
+    background: #020617;
+    color: #93c5fd;
+    border: 1px solid #334155;
+}
+
+body.dark .attack-section ol {
+    background: #020617;
+    border: 1px solid #334155;
+}
+
+body.dark .hint,
+body.dark .empty {
+    color: #cbd5e1;
+}
+
+body.dark .mode-btn {
+    background: #3b82f6;
+    color: white;
+}
+.login-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+}
+
+.login-box {
+    background: white;
+    width: 380px;
+    padding: 35px;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.2);
+    text-align: center;
+    border: 1px solid #bfdbfe;
+}
+
+.login-box h1 {
+    margin: 0;
+    color: #1e40af;
+}
+
+.login-box p {
+    color: #64748b;
+}
+
+.login-box small {
+    display: block;
+    margin-top: 15px;
+    color: #64748b;
+}
+
+body.dark .login-page {
+    background: linear-gradient(135deg, #020617, #0f172a);
+}
+
+body.dark .login-box {
+    background: #111827;
+    border-color: #334155;
+}
+
+body.dark .login-box h1 {
+    color: #93c5fd;
+}

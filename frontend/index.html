@@ -5,15 +5,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="loginPage" class="login-page">
+    <div class="login-box">
+        <h1>VulniQ Login</h1>
+        <p>Secure access to vulnerability dashboard</p>
 
-<div class="app">
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+
+        <button onclick="login()">Login</button>
+
+        <small>Email: admin@vulniq.com | Password: admin123</small>
+    </div>
+</div>
+<div class="app" id="dashboard" style="display:none;"></div>
 
     <header class="hero">
         <div>
             <h1>VulniQ</h1>
             <p>Centralized Vulnerability Detection & Intelligent Query Interface</p>
         </div>
-        <span class="status">Backend Connected</span>
+        <div class="hero-actions">
+    <span class="status">Backend Connected</span>
+
+    <button id="modeToggle" class="mode-btn">
+        🌙 Dark
+    </button>
+</div>
     </header>
 
     <div class="stats">
@@ -90,6 +108,7 @@
         <div class="section-head">
             <h2>Stored Vulnerabilities</h2>
             <button onclick="loadAll()">Refresh</button>
+         <button onclick="downloadReport()">Download Report</button> 
         </div>
         <div id="vulnList"></div>
     </section>
