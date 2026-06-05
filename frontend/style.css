@@ -381,3 +381,20 @@ body.dark .login-box h1 {
 body.dark .highlight {
     background: #082f49;
 }
+.recommendation-section {
+    background: #ecfeff;
+    border: 1px solid #bae6fd;
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+.recommendation-section h4 {
+    color: #0369a1;
+    margin-top: 0;
+}
+
+body.dark .recommendation-section {
+    background: #082f49;
+    border-color: #0369a1;
+}

@@ -35,12 +35,12 @@ class User(BaseModel):
 def load_data():
     if not os.path.exists(DATA_FILE):
         return []
-
     with open(DATA_FILE, "r") as file:
         try:
             return json.load(file)
         except:
             return []
+
 
 def save_data(data):
     with open(DATA_FILE, "w") as file:
@@ -50,7 +50,6 @@ def save_data(data):
 def load_users():
     if not os.path.exists(USER_FILE):
         return []
-
     with open(USER_FILE, "r") as file:
         try:
             return json.load(file)
@@ -73,15 +72,13 @@ def generate_attack_path(text):
             "Database access gained",
             "Sensitive data exposure"
         ]
-
     elif "xss" in lower_text or "cross site scripting" in lower_text:
         return [
             "User input not sanitized",
             "Malicious script injected",
             "Victim browser executes script",
-            "Session/session cookie stolen"
+            "Session cookie stolen"
         ]
-
     elif "weak password" in lower_text or "brute force" in lower_text:
         return [
             "Weak authentication",
@@ -89,7 +86,6 @@ def generate_attack_path(text):
             "Account takeover",
             "Unauthorized access"
         ]
-
     else:
         return [
             "Vulnerability identified",
@@ -97,6 +93,19 @@ def generate_attack_path(text):
             "Unauthorized action possible",
             "Security impact created"
         ]
+
+
+def generate_recommendation(text):
+    lower_text = text.lower()
+
+    if "sql injection" in lower_text or "sql" in lower_text:
+        return "Use parameterized queries, validate inputs, and avoid directly concatenating user input in SQL queries."
+    elif "xss" in lower_text or "cross site scripting" in lower_text:
+        return "Sanitize user input, escape output, and use Content Security Policy headers."
+    elif "weak password" in lower_text or "brute force" in lower_text:
+        return "Enforce strong password policy, account lockout, rate limiting, and multi-factor authentication."
+    else:
+        return "Apply security patches, validate inputs, review configurations, and follow secure coding practices."
 
 
 @app.get("/")
@@ -110,20 +119,20 @@ def home():
 @app.post("/add")
 def add_vulnerability(vuln: Vulnerability):
     data = load_data()
+    text = vuln.title + " " + vuln.description
 
     normalized = {
         "id": vuln.id,
         "title": vuln.title.lower(),
         "description": vuln.description.lower(),
         "severity": vuln.severity.upper(),
-        "attack_path": generate_attack_path(vuln.title + " " + vuln.description)
+        "attack_path": generate_attack_path(text),
+        "recommendation": generate_recommendation(text)
     }
 
     for item in data:
         if item["title"] == normalized["title"]:
-            return {
-                "message": "Vulnerability already exists"
-            }
+            return {"message": "Vulnerability already exists"}
 
     data.append(normalized)
     save_data(data)
@@ -173,7 +182,8 @@ def filter_by_severity(severity: str):
 def attack_path(vuln: str):
     return {
         "vulnerability": vuln,
-        "attack_path": generate_attack_path(vuln)
+        "attack_path": generate_attack_path(vuln),
+        "recommendation": generate_recommendation(vuln)
     }
 
 
@@ -181,12 +191,10 @@ def attack_path(vuln: str):
 def rag_search(query: str):
     data = load_data()
     results = []
-
     query_words = query.lower().split()
 
     for vuln in data:
         score = 0
-
         text = (
             vuln["title"] + " " +
             vuln["description"] + " " +
@@ -259,7 +267,8 @@ async def upload_report(file: UploadFile = File(...)):
         "title": "uploaded vulnerability",
         "description": lower_text,
         "severity": severity,
-        "attack_path": generate_attack_path(lower_text)
+        "attack_path": generate_attack_path(lower_text),
+        "recommendation": generate_recommendation(lower_text)
     }
 
     data.append(vuln)
@@ -270,22 +279,30 @@ async def upload_report(file: UploadFile = File(...)):
         "detected_severity": severity,
         "data": vuln
     }
+
+
 @app.delete("/delete/{vuln_id}")
 def delete_vulnerability(vuln_id: int):
-
     data = load_data()
-
     new_data = []
 
     for vuln in data:
         if vuln["id"] != vuln_id:
             new_data.append(vuln)
 
+    if len(new_data) == len(data):
+        return {
+            "message": "Vulnerability not found"
+        }
+
     save_data(new_data)
 
     return {
-        "message": "Vulnerability deleted successfully"
+        "message": "Vulnerability deleted successfully",
+        "deleted_id": vuln_id
     }
+
+
 @app.post("/register")
 def register_user(user: User):
     users = load_users()
@@ -310,28 +327,8 @@ def register_user(user: User):
         "success": True,
         "message": "User registered successfully"
     }
-@app.post("/login")
-def login_user(user: User):
-    users = load_users()
 
-    for existing_user in users:
-        if (
-            existing_user["email"] == user.email
-            and existing_user["password"] == user.password
-        ):
-            return {
-                "success": True,
-                "message": "Login successful",
-                "user": {
-                    "name": existing_user["name"],
-                    "email": existing_user["email"]
-                }
-            }
 
-    return {
-        "success": False,
-        "message": "Invalid email or password"
-    }
 @app.post("/login")
 def login_user(user: User):
     users = load_users()

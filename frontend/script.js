@@ -1,20 +1,91 @@
-let searchedIds = [];
 const API_URL = "http://127.0.0.1:8000";
 
+let searchedIds = [];
 let riskChart = null;
 
 window.onload = function () {
-    if (localStorage.getItem("loggedIn") === "true") {
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
+    setupDarkMode();
 
-        getStats();
-        loadAll();
+    if (localStorage.getItem("loggedIn") === "true") {
+        showDashboard();
     } else {
-        document.getElementById("loginPage").style.display = "flex";
-        document.getElementById("dashboard").style.display = "none";
+        showLogin();
     }
 };
+
+function showDashboard() {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    getStats();
+    loadAll();
+}
+
+function showLogin() {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("dashboard").style.display = "none";
+}
+
+async function registerUser() {
+    const name = document.getElementById("regName").value;
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    if (!name || !email || !password) {
+        message.innerText = "Please fill all fields";
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+    message.innerText = data.message;
+}
+
+async function loginUser() {
+    const name = document.getElementById("regName").value || "User";
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    if (!email || !password) {
+        message.innerText = "Please enter email and password";
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userEmail", email);
+        showDashboard();
+    } else {
+        message.innerText = data.message;
+    }
+}
+
+function logoutUser() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("userEmail");
+
+    document.getElementById("loginEmail").value = "";
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("regName").value = "";
+    document.getElementById("loginMessage").innerText = "Logged out successfully";
+
+    showLogin();
+}
+
 async function addVulnerability() {
     const title = document.getElementById("vulnTitle").value;
     const description = document.getElementById("vulnDescription").value;
@@ -27,16 +98,14 @@ async function addVulnerability() {
 
     const payload = {
         id: Date.now(),
-        title: title,
-        description: description,
-        severity: severity
+        title,
+        description,
+        severity
     };
 
     const response = await fetch(`${API_URL}/add`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     });
 
@@ -111,7 +180,9 @@ async function getStats() {
     document.getElementById("medium").innerText = data.medium;
     document.getElementById("low").innerText = data.low;
 
-    drawChart(data.high, data.medium, data.low);
+    if (typeof Chart !== "undefined") {
+        drawChart(data.high, data.medium, data.low);
+    }
 }
 
 function drawChart(high, medium, low) {
@@ -152,9 +223,10 @@ async function loadAll() {
 
     data.forEach(vuln => {
         const div = document.createElement("div");
+
         div.className = searchedIds.includes(vuln.id)
-    ? "vuln-item highlight"
-    : "vuln-item";
+            ? "vuln-item highlight"
+            : "vuln-item";
 
         div.innerHTML = `
             <h3>${vuln.title}</h3>
@@ -167,20 +239,16 @@ async function loadAll() {
 
             <div class="attack-section">
                 <h4>Attack Path</h4>
-
                 ${
                     vuln.attack_path && vuln.attack_path.length > 0
-                    ?
-                    `
-                    <ol>
-                        ${vuln.attack_path
-                            .map(step => `<li>${step}</li>`)
-                            .join("")}
-                    </ol>
-                    `
-                    :
-                    `<p class="empty">No attack path available</p>`
+                    ? `<ol>${vuln.attack_path.map(step => `<li>${step}</li>`).join("")}</ol>`
+                    : `<p class="empty">No attack path available</p>`
                 }
+            </div>
+
+            <div class="recommendation-section">
+                <h4>Recommendation</h4>
+                <p>${vuln.recommendation || "No recommendation available"}</p>
             </div>
 
             <button class="delete-btn" onclick="deleteVulnerability(${vuln.id})">
@@ -208,19 +276,12 @@ async function deleteVulnerability(id) {
     loadAll();
 }
 
-function showResult(data) {
-    document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-}
 async function downloadReport() {
     const response = await fetch(`${API_URL}/all`);
     const data = await response.json();
 
     const fileData = JSON.stringify(data, null, 2);
-
-    const blob = new Blob([fileData], {
-        type: "application/json"
-    });
-
+    const blob = new Blob([fileData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
@@ -230,116 +291,7 @@ async function downloadReport() {
 
     URL.revokeObjectURL(url);
 }
-const modeToggle = document.getElementById("modeToggle");
 
-if (modeToggle) {
-
-    modeToggle.addEventListener("click", function () {
-
-        document.body.classList.toggle("dark");
-
-        if (document.body.classList.contains("dark")) {
-
-            modeToggle.innerHTML = "☀️ Light";
-
-        } else {
-
-            modeToggle.innerHTML = "🌙 Dark";
-        }
-    });
-
-}
-function login() {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    if (email === "admin@vulniq.com" && password === "admin123") {
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-
-        getStats();
-        loadAll();
-    } else {
-        alert("Invalid email or password");
-    }
-}
-async function registerUser() {
-    const name = document.getElementById("regName").value;
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    if (!name || !email || !password) {
-        document.getElementById("loginMessage").innerText = "Please fill all fields";
-        return;
-    }
-
-    const response = await fetch(`${API_URL}/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password
-        })
-    });
-
-    const data = await response.json();
-    document.getElementById("loginMessage").innerText = data.message;
-}
-
-async function loginUser() {
-    const name = document.getElementById("regName").value || "User";
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    if (!email || !password) {
-        document.getElementById("loginMessage").innerText = "Please enter email and password";
-        return;
-    }
-
-    const response = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password
-        })
-    });
-
-    const data = await response.json();
-if (data.success) {
-    localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("userEmail", email);
-
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-
-    getStats();
-    loadAll();
-
-    }else {
-        document.getElementById("loginMessage").innerText = data.message;
-    }
-}
-function logoutUser() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("userEmail");
-
-    document.getElementById("dashboard").style.display = "none";
-    document.getElementById("loginPage").style.display = "flex";
-
-    document.getElementById("loginEmail").value = "";
-    document.getElementById("loginPassword").value = "";
-    document.getElementById("regName").value = "";
-
-    document.getElementById("loginMessage").innerText =
-        "Logged out successfully";
-}
 async function downloadPDFReport() {
     const response = await fetch(`${API_URL}/all`);
     const vulnerabilities = await response.json();
@@ -394,8 +346,35 @@ async function downloadPDFReport() {
             y += 7;
         }
 
+        if (vuln.recommendation) {
+            doc.text("Recommendation:", 25, y);
+            y += 8;
+            doc.text(vuln.recommendation, 30, y);
+            y += 10;
+        }
+
         y += 8;
     });
 
     doc.save("vulniq_security_report.pdf");
+}
+
+function showResult(data) {
+    document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+}
+
+function setupDarkMode() {
+    const modeToggle = document.getElementById("modeToggle");
+
+    if (!modeToggle) return;
+
+    modeToggle.addEventListener("click", function () {
+        document.body.classList.toggle("dark");
+
+        if (document.body.classList.contains("dark")) {
+            modeToggle.innerHTML = "☀️ Light";
+        } else {
+            modeToggle.innerHTML = "🌙 Dark";
+        }
+    });
 }

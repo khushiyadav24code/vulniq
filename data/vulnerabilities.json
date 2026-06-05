@@ -1,14 +1,15 @@
 [
     {
-        "id": 1780522431900,
+        "id": 1780683165662,
         "title": "sql injection",
-        "description": "login form vulnerable",
+        "description": "login  from vulnerable",
         "severity": "HIGH",
         "attack_path": [
             "Input validation failure",
             "SQL Injection executed",
             "Database access gained",
             "Sensitive data exposure"
-        ]
+        ],
+        "recommendation": "Use parameterized queries, validate inputs, and avoid directly concatenating user input in SQL queries."
     }
 ]
