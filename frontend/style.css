@@ -321,7 +321,7 @@ body.dark .mode-btn {
     color: white;
 }
 .login-page {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -364,4 +364,11 @@ body.dark .login-box {
 
 body.dark .login-box h1 {
     color: #93c5fd;
+}
+.logout-btn {
+    background: #ef4444;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
 }

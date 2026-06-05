@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 DATA_FILE = "data/vulnerabilities.json"
+USER_FILE = "users.json"
 os.makedirs("data", exist_ok=True)
 
 
@@ -23,6 +24,12 @@ class Vulnerability(BaseModel):
     title: str
     description: str
     severity: str
+
+
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
 
 
 def load_data():
@@ -35,10 +42,25 @@ def load_data():
         except:
             return []
 
-
 def save_data(data):
     with open(DATA_FILE, "w") as file:
         json.dump(data, file, indent=4)
+
+
+def load_users():
+    if not os.path.exists(USER_FILE):
+        return []
+
+    with open(USER_FILE, "r") as file:
+        try:
+            return json.load(file)
+        except:
+            return []
+
+
+def save_users(users):
+    with open(USER_FILE, "w") as file:
+        json.dump(users, file, indent=4)
 
 
 def generate_attack_path(text):
@@ -263,4 +285,72 @@ def delete_vulnerability(vuln_id: int):
 
     return {
         "message": "Vulnerability deleted successfully"
+    }
+@app.post("/register")
+def register_user(user: User):
+    users = load_users()
+
+    for existing_user in users:
+        if existing_user["email"] == user.email:
+            return {
+                "success": False,
+                "message": "Email already registered"
+            }
+
+    new_user = {
+        "name": user.name,
+        "email": user.email,
+        "password": user.password
+    }
+
+    users.append(new_user)
+    save_users(users)
+
+    return {
+        "success": True,
+        "message": "User registered successfully"
+    }
+@app.post("/login")
+def login_user(user: User):
+    users = load_users()
+
+    for existing_user in users:
+        if (
+            existing_user["email"] == user.email
+            and existing_user["password"] == user.password
+        ):
+            return {
+                "success": True,
+                "message": "Login successful",
+                "user": {
+                    "name": existing_user["name"],
+                    "email": existing_user["email"]
+                }
+            }
+
+    return {
+        "success": False,
+        "message": "Invalid email or password"
+    }
+@app.post("/login")
+def login_user(user: User):
+    users = load_users()
+
+    for existing_user in users:
+        if (
+            existing_user["email"] == user.email
+            and existing_user["password"] == user.password
+        ):
+            return {
+                "success": True,
+                "message": "Login successful",
+                "user": {
+                    "name": existing_user["name"],
+                    "email": existing_user["email"]
+                }
+            }
+
+    return {
+        "success": False,
+        "message": "Invalid email or password"
     }

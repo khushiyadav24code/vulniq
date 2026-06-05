@@ -7,18 +7,20 @@
 <body>
 <div id="loginPage" class="login-page">
     <div class="login-box">
-        <h1>VulniQ Login</h1>
-        <p>Secure access to vulnerability dashboard</p>
+        <h1>VulniQ</h1>
+        <p>Login or create your account</p>
 
+        <input type="text" id="regName" placeholder="Name">
         <input type="email" id="loginEmail" placeholder="Email">
         <input type="password" id="loginPassword" placeholder="Password">
 
-        <button onclick="login()">Login</button>
+        <button onclick="registerUser()">Register</button>
+        <button onclick="loginUser()">Login</button>
 
-        <small>Email: admin@vulniq.com | Password: admin123</small>
+        <small id="loginMessage"></small>
     </div>
 </div>
-<div class="app" id="dashboard" style="display:none;"></div>
+<div class="app" id="dashboard" style="display:none;">
 
     <header class="hero">
         <div>
@@ -31,6 +33,7 @@
     <button id="modeToggle" class="mode-btn">
         🌙 Dark
     </button>
+    <button onclick="logoutUser()" class="logout-btn">Logout</button>
 </div>
     </header>
 
@@ -108,7 +111,7 @@
         <div class="section-head">
             <h2>Stored Vulnerabilities</h2>
             <button onclick="loadAll()">Refresh</button>
-         <button onclick="downloadReport()">Download Report</button> 
+         <button onclick="downloadReport()">Download Report</button> <button onclick="downloadPDFReport()">Download PDF</button>
         </div>
         <div id="vulnList"></div>
     </section>
@@ -116,6 +119,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

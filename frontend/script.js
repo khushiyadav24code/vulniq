@@ -3,10 +3,17 @@ const API_URL = "http://127.0.0.1:8000";
 let riskChart = null;
 
 window.onload = function () {
-    getStats();
-    loadAll();
-};
+    if (localStorage.getItem("loggedIn") === "true") {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
 
+        getStats();
+        loadAll();
+    } else {
+        document.getElementById("loginPage").style.display = "flex";
+        document.getElementById("dashboard").style.display = "none";
+    }
+};
 async function addVulnerability() {
     const title = document.getElementById("vulnTitle").value;
     const description = document.getElementById("vulnDescription").value;
@@ -249,4 +256,140 @@ function login() {
     } else {
         alert("Invalid email or password");
     }
+}
+async function registerUser() {
+    const name = document.getElementById("regName").value;
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if (!name || !email || !password) {
+        document.getElementById("loginMessage").innerText = "Please fill all fields";
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password
+        })
+    });
+
+    const data = await response.json();
+    document.getElementById("loginMessage").innerText = data.message;
+}
+
+async function loginUser() {
+    const name = document.getElementById("regName").value || "User";
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if (!email || !password) {
+        document.getElementById("loginMessage").innerText = "Please enter email and password";
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password
+        })
+    });
+
+    const data = await response.json();
+if (data.success) {
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("userEmail", email);
+
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+
+    getStats();
+    loadAll();
+
+    }else {
+        document.getElementById("loginMessage").innerText = data.message;
+    }
+}
+function logoutUser() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("userEmail");
+
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("loginPage").style.display = "flex";
+
+    document.getElementById("loginEmail").value = "";
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("regName").value = "";
+
+    document.getElementById("loginMessage").innerText =
+        "Logged out successfully";
+}
+async function downloadPDFReport() {
+    const response = await fetch(`${API_URL}/all`);
+    const vulnerabilities = await response.json();
+
+    const statsResponse = await fetch(`${API_URL}/stats`);
+    const stats = await statsResponse.json();
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("VulniQ Security Report", 20, 20);
+
+    doc.setFontSize(11);
+    doc.text("Centralized Vulnerability Detection and Intelligent Query Interface", 20, 30);
+
+    doc.setFontSize(13);
+    doc.text(`Total Vulnerabilities: ${stats.total_vulnerabilities}`, 20, 45);
+    doc.text(`High Risk: ${stats.high}`, 20, 55);
+    doc.text(`Medium Risk: ${stats.medium}`, 20, 65);
+    doc.text(`Low Risk: ${stats.low}`, 20, 75);
+
+    let y = 95;
+
+    vulnerabilities.forEach((vuln, index) => {
+        if (y > 260) {
+            doc.addPage();
+            y = 20;
+        }
+
+        doc.setFontSize(14);
+        doc.text(`${index + 1}. ${vuln.title}`, 20, y);
+        y += 8;
+
+        doc.setFontSize(11);
+        doc.text(`Severity: ${vuln.severity}`, 25, y);
+        y += 8;
+
+        doc.text(`Description: ${vuln.description}`, 25, y);
+        y += 8;
+
+        doc.text("Attack Path:", 25, y);
+        y += 8;
+
+        if (vuln.attack_path && vuln.attack_path.length > 0) {
+            vuln.attack_path.forEach(step => {
+                doc.text(`- ${step}`, 30, y);
+                y += 7;
+            });
+        } else {
+            doc.text("- No attack path available", 30, y);
+            y += 7;
+        }
+
+        y += 8;
+    });
+
+    doc.save("vulniq_security_report.pdf");
 }
