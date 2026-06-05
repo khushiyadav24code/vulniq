@@ -1,3 +1,4 @@
+let searchedIds = [];
 const API_URL = "http://127.0.0.1:8000";
 
 let riskChart = null;
@@ -86,7 +87,10 @@ async function searchVuln() {
     const response = await fetch(`${API_URL}/rag-search?query=${encodeURIComponent(query)}`);
     const data = await response.json();
 
+    searchedIds = data.results.map(item => item.vulnerability.id);
+
     showResult(data);
+    loadAll();
 }
 
 async function filterSeverity() {
@@ -148,7 +152,9 @@ async function loadAll() {
 
     data.forEach(vuln => {
         const div = document.createElement("div");
-        div.className = "vuln-item";
+        div.className = searchedIds.includes(vuln.id)
+    ? "vuln-item highlight"
+    : "vuln-item";
 
         div.innerHTML = `
             <h3>${vuln.title}</h3>
