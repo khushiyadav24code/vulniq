@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div id="loginPage" class="login-page">
     <div class="login-box">
         <h1>VulniQ</h1>
@@ -29,7 +30,7 @@
         </div>
         <div class="hero-actions">
     <span class="status">Backend Connected</span>
-
+<span id="userProfile" class="user-profile"></span>
     <button id="modeToggle" class="mode-btn">
         🌙 Dark
     </button>
@@ -88,6 +89,7 @@
             <p class="hint">Search vulnerabilities using natural language.</p>
             <input type="text" id="searchQuery" placeholder="Example: login sql vulnerability">
             <button onclick="searchVuln()">Search</button>
+            <button onclick="aiSearch()">AI Search</button>
         </section>
 
         <section class="panel">
@@ -101,6 +103,19 @@
             <button onclick="filterSeverity()">Filter</button>
         </section>
     </div>
+    <section class="panel">
+    <h2>Nmap Scanner</h2>
+
+    <input
+        type="text"
+        id="scanTarget"
+        placeholder="127.0.0.1"
+    >
+
+    <button onclick="startScan()">
+        Start Scan
+    </button>
+</section>
 
     <section class="panel">
         <h2>Analysis Output</h2>
@@ -115,6 +130,23 @@
         </div>
         <div id="vulnList"></div>
     </section>
+    <section class="panel">
+    <div class="section-head">
+        <h2>Latest CVE Feed</h2>
+        <button onclick="loadCVEFeed()">Load CVEs</button>
+    </div>
+
+    <div id="cveContainer" class="cve-grid"></div>
+</section>
+<section class="card">
+    <h2>Analytics</h2>
+
+    <button onclick="loadAnalytics()">
+        Refresh Analytics
+    </button>
+
+    <div id="analyticsBox"></div>
+</section>
 
 </div>
 

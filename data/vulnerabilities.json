@@ -11,5 +11,70 @@
             "Sensitive data exposure"
         ],
         "recommendation": "Use parameterized queries, validate inputs, and avoid directly concatenating user input in SQL queries."
+    },
+    {
+        "id": 3,
+        "title": "nmap scan result",
+        "description": "starting nmap 7.80 ( https://nmap.org ) at 2026-06-06 15:17 india standard time\nnmap scan report for localhost (127.0.0.1)\nhost is up (0.00022s latency).\nnot shown: 96 closed ports\nport     state service\n135/tcp  open  msrpc\n445/tcp  open  microsoft-ds\n3306/tcp open  mysql\n8000/tcp open  http-alt\n\nnmap done: 1 ip address (1 host up) scanned in 0.87 seconds\n",
+        "severity": "MEDIUM",
+        "attack_path": [
+            "Open service detected",
+            "Service enumeration possible",
+            "Potential attack surface exposed",
+            "Unauthorized access risk"
+        ],
+        "recommendation": "Close unnecessary open ports, restrict services using firewall rules, and keep exposed services updated."
+    },
+    {
+        "id": 4,
+        "title": "nmap scan result",
+        "description": "starting nmap 7.80 ( https://nmap.org ) at 2026-06-06 15:17 india standard time\nnmap scan report for localhost (127.0.0.1)\nhost is up (0.00025s latency).\nnot shown: 96 closed ports\nport     state service\n135/tcp  open  msrpc\n445/tcp  open  microsoft-ds\n3306/tcp open  mysql\n8000/tcp open  http-alt\n\nnmap done: 1 ip address (1 host up) scanned in 0.87 seconds\n",
+        "severity": "MEDIUM",
+        "attack_path": [
+            "Open service detected",
+            "Service enumeration possible",
+            "Potential attack surface exposed",
+            "Unauthorized access risk"
+        ],
+        "recommendation": "Close unnecessary open ports, restrict services using firewall rules, and keep exposed services updated."
+    },
+    {
+        "id": 5,
+        "title": "nmap scan result",
+        "description": "starting nmap 7.80 ( https://nmap.org ) at 2026-06-06 15:17 india standard time\nnmap scan report for localhost (127.0.0.1)\nhost is up (0.00s latency).\nnot shown: 96 closed ports\nport     state service\n135/tcp  open  msrpc\n445/tcp  open  microsoft-ds\n3306/tcp open  mysql\n8000/tcp open  http-alt\n\nnmap done: 1 ip address (1 host up) scanned in 0.60 seconds\n",
+        "severity": "MEDIUM",
+        "attack_path": [
+            "Open service detected",
+            "Service enumeration possible",
+            "Potential attack surface exposed",
+            "Unauthorized access risk"
+        ],
+        "recommendation": "Close unnecessary open ports, restrict services using firewall rules, and keep exposed services updated."
+    },
+    {
+        "id": 6,
+        "title": "nmap scan result",
+        "description": "starting nmap 7.80 ( https://nmap.org ) at 2026-06-06 15:18 india standard time\nnmap scan report for localhost (127.0.0.1)\nhost is up (0.0010s latency).\nnot shown: 96 closed ports\nport     state service\n135/tcp  open  msrpc\n445/tcp  open  microsoft-ds\n3306/tcp open  mysql\n8000/tcp open  http-alt\n\nnmap done: 1 ip address (1 host up) scanned in 0.47 seconds\n",
+        "severity": "MEDIUM",
+        "attack_path": [
+            "Open service detected",
+            "Service enumeration possible",
+            "Potential attack surface exposed",
+            "Unauthorized access risk"
+        ],
+        "recommendation": "Close unnecessary open ports, restrict services using firewall rules, and keep exposed services updated."
+    },
+    {
+        "id": 6,
+        "title": "nmap scan result",
+        "description": "No open ports found",
+        "severity": "MEDIUM",
+        "attack_path": [
+            "Open service detected",
+            "Service enumeration possible",
+            "Potential attack surface exposed",
+            "Unauthorized access risk"
+        ],
+        "recommendation": "Close unnecessary open ports, restrict services using firewall rules, and keep exposed services updated."
     }
 ]

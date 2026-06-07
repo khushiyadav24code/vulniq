@@ -16,6 +16,8 @@ window.onload = function () {
 function showDashboard() {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
+    const name = localStorage.getItem("userName") || "User";
+    document.getElementById("userProfile").innerText = `Welcome ${name}`;
     getStats();
     loadAll();
 }
@@ -68,6 +70,7 @@ async function loginUser() {
     if (data.success) {
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("userEmail", email);
+        localStorage.setItem("userName", data.user.name);
         showDashboard();
     } else {
         message.innerText = data.message;
@@ -77,6 +80,7 @@ async function loginUser() {
 function logoutUser() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
 
     document.getElementById("loginEmail").value = "";
     document.getElementById("loginPassword").value = "";
@@ -185,26 +189,40 @@ async function getStats() {
     }
 }
 
+let chartInstance = null;
+
 function drawChart(high, medium, low) {
-    const ctx = document.getElementById("riskChart");
 
-    if (!ctx) return;
+    const ctx =
+        document.getElementById("riskChart");
 
-    if (riskChart) {
-        riskChart.destroy();
+    if (chartInstance) {
+        chartInstance.destroy();
     }
 
-    riskChart = new Chart(ctx, {
-        type: "doughnut",
+    chartInstance = new Chart(ctx, {
+        type: "pie",
         data: {
-            labels: ["High", "Medium", "Low"],
+            labels: [
+                "High Risk",
+                "Medium Risk",
+                "Low Risk"
+            ],
             datasets: [{
-                data: [high, medium, low],
-                backgroundColor: ["#ef4444", "#f59e0b", "#22c55e"],
-                borderWidth: 2
+                data: [
+                    high,
+                    medium,
+                    low
+                ],
+                backgroundColor: [
+                    "#dc2626",
+                    "#f59e0b",
+                    "#16a34a"
+                ]
             }]
         },
         options: {
+            responsive: true,
             plugins: {
                 legend: {
                     position: "bottom"
@@ -377,4 +395,100 @@ function setupDarkMode() {
             modeToggle.innerHTML = "🌙 Dark";
         }
     });
+}
+async function aiSearch() {
+    const query = document.getElementById("searchQuery").value;
+
+    if (!query) {
+        alert("Please enter search text");
+        return;
+    }
+
+    const response = await fetch(`${API_URL}/ai-search?query=${encodeURIComponent(query)}`);
+    const data = await response.json();
+
+    searchedIds = data.results.map(item => item.vulnerability.id);
+
+    showResult(data);
+    loadAll();
+}
+async function startScan() {
+
+    const target =
+        document.getElementById("scanTarget").value;
+
+    if (!target) {
+        alert("Enter target IP");
+        return;
+    }
+
+    const response =
+        await fetch(
+            `${API_URL}/nmap-scan?target=${target}`
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById("result").textContent =
+        data.scan_result || data.message;
+}
+async function loadCVEFeed() {
+    const response = await fetch(`${API_URL}/cve-feed`);
+    const data = await response.json();
+
+    const container = document.getElementById("cveContainer");
+    container.innerHTML = "";
+
+    data.results.forEach(cve => {
+        container.innerHTML += `
+            <div class="cve-card">
+                <div class="cve-header">
+                    <h3>${cve.cve_id}</h3>
+                    <span class="cve-badge ${cve.severity}">
+                        ${cve.severity}
+                    </span>
+                </div>
+
+                <h4>${cve.title}</h4>
+
+                <p>${cve.description || "No description available"}</p>
+
+                <div class="recommendation-section">
+                    <h4>Recommendation</h4>
+                    <p>${cve.recommendation || "Apply latest patches and monitor vendor advisories."}</p>
+                </div>
+            </div>
+        `;
+    });
+}
+async function loadAnalytics() {
+
+    const response =
+        await fetch(`${API_URL}/analytics`);
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        "analyticsBox"
+    ).innerHTML = `
+
+        <div class="vulnerability-card">
+
+            <h3>Total Vulnerabilities:
+                ${data.total_vulnerabilities}
+            </h3>
+
+            <h3>Nmap Scans:
+                ${data.nmap_scans}
+            </h3>
+
+            <h3>Uploaded Reports:
+                ${data.uploaded_reports}
+            </h3>
+
+        </div>
+
+    `;
 }

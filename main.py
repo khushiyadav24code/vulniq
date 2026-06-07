@@ -1,10 +1,62 @@
 from fastapi import FastAPI, Query, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import json
 import os
+import subprocess
 
 app = FastAPI()
+@app.get("/ai-search")
+def ai_search(query: str):
+    data = load_data()
+
+    if not data:
+        return {
+            "query": query,
+            "message": "No vulnerabilities found",
+            "results": []
+        }
+
+    documents = []
+
+    for vuln in data:
+        text = (
+            vuln.get("title", "") + " " +
+            vuln.get("description", "") + " " +
+            vuln.get("severity", "") + " " +
+            " ".join(vuln.get("attack_path", [])) + " " +
+            vuln.get("recommendation", "")
+        )
+        documents.append(text)
+
+    documents.append(query)
+
+    vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform(documents)
+
+    query_vector = vectors[-1]
+    vuln_vectors = vectors[:-1]
+
+    scores = cosine_similarity(query_vector, vuln_vectors)[0]
+
+    results = []
+
+    for index, score in enumerate(scores):
+        if score > 0:
+            results.append({
+                "vulnerability": data[index],
+                "ai_score": round(float(score), 3)
+            })
+
+    results = sorted(results, key=lambda x: x["ai_score"], reverse=True)
+
+    return {
+        "query": query,
+        "message": "AI-based vulnerability search completed",
+        "results": results
+    }
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,7 +67,7 @@ app.add_middleware(
 )
 
 DATA_FILE = "data/vulnerabilities.json"
-USER_FILE = "users.json"
+USER_FILE = "frontend/users.json"
 os.makedirs("data", exist_ok=True)
 
 
@@ -350,4 +402,105 @@ def login_user(user: User):
     return {
         "success": False,
         "message": "Invalid email or password"
+    }
+@app.get("/nmap-scan")
+def nmap_scan(target: str):
+    try:
+        command = [
+            r"C:\Program Files (x86)\Nmap\nmap.exe",
+            "-F",
+            target
+        ]
+
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+
+        output = result.stdout
+
+        ports = []
+        for line in output.splitlines():
+            if "/tcp" in line and "open" in line:
+                ports.append(line.strip())
+
+        clean_output = "\n".join(ports)
+
+        if clean_output == "":
+            clean_output = "No open ports found"
+
+        data = load_data()
+
+        duplicate_found = False
+        for item in data:
+            if item["title"] == "nmap scan result" and item["description"] == clean_output:
+                duplicate_found = True
+                break
+
+        if not duplicate_found:
+            scan_vuln = {
+                "id": len(data) + 1,
+                "title": "nmap scan result",
+                "description": clean_output,
+                "severity": "MEDIUM",
+                "attack_path": [
+                    "Open service detected",
+                    "Service enumeration possible",
+                    "Potential attack surface exposed",
+                    "Unauthorized access risk"
+                ],
+                "recommendation": "Close unnecessary open ports, restrict services using firewall rules, and keep exposed services updated."
+            }
+
+            data.append(scan_vuln)
+            save_data(data)
+
+        return {
+            "target": target,
+            "status": "success",
+            "scan_result": output
+        }
+
+    except Exception as e:
+        return {
+            "target": target,
+            "status": "error",
+            "message": str(e)
+        }
+@app.get("/cve-feed")
+def cve_feed():
+    return {
+        "message": "CVE feed loaded successfully",
+        "results": [
+            {
+                "cve_id": "CVE-2024-3094",
+                "title": "XZ Utils Backdoor",
+                "severity": "CRITICAL"
+            }
+        ]
+    }    
+@app.get("/analytics")
+def analytics():
+
+    data = load_data()
+
+    total = len(data)
+
+    nmap_scans = 0
+    uploaded_reports = 0
+
+    for vuln in data:
+
+        if vuln["title"] == "nmap scan result":
+            nmap_scans += 1
+
+        if vuln["title"] == "uploaded vulnerability":
+            uploaded_reports += 1
+
+    return {
+        "total_vulnerabilities": total,
+        "nmap_scans": nmap_scans,
+        "uploaded_reports": uploaded_reports
     }
