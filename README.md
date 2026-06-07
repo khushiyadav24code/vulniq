@@ -1,188 +1,175 @@
-\# VulniQ - Centralized Vulnerability Detection and Intelligent Query Interface
+# VulniQ
 
+## Centralized Vulnerability Detection & Intelligent Query Interface
 
+VulniQ is an AI-assisted cybersecurity platform designed to centralize vulnerability management, intelligent search, network scanning, security analytics, and vulnerability intelligence reporting. The platform helps users identify, analyze, and manage security risks through an interactive dashboard.
 
-\## Project Overview
+---
 
+## Problem Statement
 
+Organizations often face challenges in managing vulnerabilities from multiple sources. Security teams need a centralized platform to monitor vulnerabilities, analyze risks, perform network scans, and generate actionable security recommendations.
 
-VulniQ is a cybersecurity project that helps in:
+---
 
+## Objectives
 
+* Centralize vulnerability information.
+* Perform network security scanning using Nmap.
+* Provide intelligent vulnerability search capabilities.
+* Generate attack paths and security recommendations.
+* Visualize security analytics through dashboards.
+* Display CVE-based vulnerability intelligence.
+* Generate downloadable reports.
 
-\* Centralized vulnerability management
+---
 
-\* Vulnerability normalization
+## Key Features
 
-\* Intelligent vulnerability search
+### Authentication System
 
-\* Attack path analysis
+* User Registration
+* User Login
+* Session Management
+* Logout Functionality
 
-\* Severity detection
+### Vulnerability Management
 
-\* Report upload and processing
+* Add Vulnerabilities
+* Delete Vulnerabilities
+* Store Vulnerability Records
+* Severity Classification
 
+### AI-Powered Analysis
 
+* Intelligent Search
+* RAG-Based Search
+* Attack Path Generation
+* Security Recommendations
 
-\## Features
+### Network Security
 
+* Nmap Integration
+* Real-Time Port Scanning
+* Scan Result Storage
+* Risk Assessment
 
+### Reporting & Analytics
 
-\### Vulnerability Management
+* PDF Report Generation
+* Dashboard Statistics
+* Risk Distribution Visualization
+* Analytics Dashboard
 
+### Threat Intelligence
 
+* CVE Feed Integration
+* Vulnerability Intelligence Display
+* Security Awareness Dashboard
 
-\* Add vulnerabilities
+### User Experience
 
-\* View all vulnerabilities
+* Modern Dashboard UI
+* Dark Mode Support
+* Responsive Design
 
-\* Duplicate detection
+---
 
-\* Severity filtering
+## System Architecture
 
+User → Frontend Dashboard → FastAPI Backend
 
+Backend Modules:
 
-\### Intelligent Search
+* Authentication Module
+* Vulnerability Engine
+* AI Search Engine
+* Recommendation Engine
+* Attack Path Generator
+* Nmap Scanner
+* CVE Feed Module
+* Analytics Module
 
+Data Storage:
 
+* JSON-based Vulnerability Database
 
-\* Keyword search
+---
 
-\* Basic RAG search
+## Technology Stack
 
+### Frontend
 
+* HTML5
+* CSS3
+* JavaScript
 
-\### Attack Path Analysis
+### Backend
 
+* Python
+* FastAPI
 
+### Security Tools
 
-\* SQL Injection attack path generation
+* Nmap
 
-\* XSS attack path generation
+### Visualization
 
-\* Security impact analysis
+* Chart.js
 
+### Data Storage
 
+* JSON Database
 
-\### Report Processing
+---
 
+## Workflow
 
+1. User logs into the system.
+2. Vulnerabilities are added manually or through report uploads.
+3. Nmap performs network scans.
+4. Vulnerability data is analyzed.
+5. Attack paths and recommendations are generated.
+6. Analytics and reports are displayed on the dashboard.
+7. CVE intelligence is presented for awareness.
 
-\* Upload vulnerability reports (.txt)
+---
 
-\* Automatic severity detection
+## Project Achievements
 
-\* Automatic attack path generation
+* Implemented Authentication System
+* Integrated Nmap Scanning
+* Built AI Search Functionality
+* Developed Attack Path Generation
+* Added Recommendation Engine
+* Created CVE Intelligence Dashboard
+* Implemented Analytics Visualization
+* Generated PDF Reporting
 
+---
 
+## Future Enhancements
 
-\## APIs
+* Live NVD CVE API Integration
+* Real-Time Vulnerability Intelligence
+* OWASP ZAP Integration
+* FAISS Semantic Search
+* Advanced Threat Detection
+* Machine Learning-Based Risk Prediction
+* Multi-User Role Management
 
+---
 
+## Developer
 
-\### GET /
+**Khushi Yadav**
 
+B.Tech Computer Science & Engineering
 
+Presidency University
 
-Backend status
+---
 
+## Project Version
 
-
-\### POST /add
-
-
-
-Add vulnerability
-
-
-
-\### GET /all
-
-
-
-View all vulnerabilities
-
-
-
-\### GET /search
-
-
-
-Search vulnerabilities
-
-
-
-\### GET /filter
-
-
-
-Filter by severity
-
-
-
-\### GET /attack-path
-
-
-
-Generate attack path
-
-
-
-\### GET /rag-search
-
-
-
-Intelligent vulnerability search
-
-
-
-\### POST /upload-report
-
-
-
-Upload vulnerability report
-
-
-
-\### GET /stats
-
-
-
-Dashboard statistics
-
-
-
-\## Technologies Used
-
-
-
-\* Python
-
-\* FastAPI
-
-\* JSON Storage
-
-\* GitHub
-
-\* Swagger UI
-
-
-
-\## Future Enhancements
-
-
-
-\* Real RAG using FAISS
-
-\* CVE Dataset Integration
-
-\* React Dashboard
-
-\* Graph Visualization
-
-\* PostgreSQL Database
-
-\* Authentication and Authorization
-
-
-
+**VulniQ v1.0**
